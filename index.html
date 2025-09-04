@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comfort PACT Baseline Compliance Analysis Dashboard</title>
+    <title>Comfort PACT Benchmarking Compliance Analysis Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -45,6 +45,7 @@
 
         .header p {
             color: #6b7280;
+            font-size: 1.125rem;
         }
 
         .section-title {
@@ -57,10 +58,6 @@
         .grid {
             display: grid;
             gap: 16px;
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
 
         .grid-5 {
@@ -124,19 +121,7 @@
 
         .executive-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            align-items: center;
-        }
-
-        .exec-left {
-            display: flex;
-            gap: 16px;
-        }
-
-        .exec-right {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: repeat(4, 1fr);
             gap: 16px;
         }
 
@@ -147,47 +132,38 @@
             position: relative;
         }
 
-        .pie-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            justify-content: center;
+        .pie-slice {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid;
+        .pie-slice:hover {
+            opacity: 0.8;
         }
 
-        .legend-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            margin-right: 12px;
+        .pie-tooltip {
+            position: absolute;
+            background: #111827;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 20;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .legend-left {
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-        }
-
-        .legend-right {
-            text-align: right;
-        }
-
-        .legend-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .legend-sub {
-            font-size: 0.875rem;
-            color: #6b7280;
+        .pie-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #111827;
         }
 
         .priority-section {
@@ -232,6 +208,12 @@
             border-radius: 8px;
             padding: 16px;
             margin-bottom: 12px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .priority-item:hover {
+            transform: translateX(5px);
         }
 
         .priority-name {
@@ -270,6 +252,12 @@
             padding: 16px;
             text-align: center;
             border: 2px solid;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .pillar-card:hover {
+            transform: scale(1.02);
         }
 
         .high-pillar {
@@ -348,6 +336,11 @@
 
         .table tr:hover {
             background-color: #f9fafb;
+        }
+
+        .table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
 
         .compliance-score {
@@ -439,7 +432,6 @@
             border-radius: 8px;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
             padding: 24px;
-            text-align: center;
             font-size: 0.875rem;
             color: #6b7280;
         }
@@ -455,12 +447,8 @@
 
         @media (max-width: 768px) {
             .executive-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
-            .exec-left {
-                flex-direction: column;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
 
             .bar-label {
@@ -475,103 +463,46 @@
             .card {
                 padding: 16px;
             }
+        }
 
-            .interactive-bar {
-                height: 250px;
-                padding: 10px;
-            }
-
-            .bar-rect {
-                width: 50px;
+        @media (max-width: 480px) {
+            .executive-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
         }
     </style>
-    <script>
-        function showTooltip(element) {
-            // Toggle tooltip visibility on click for mobile
-            const tooltip = element.querySelector('.tooltip');
-            const isVisible = tooltip.style.opacity === '1';
-            
-            // Hide all tooltips first
-            document.querySelectorAll('.tooltip').forEach(t => t.style.opacity = '0');
-            
-            // Show clicked tooltip if it wasn't already visible
-            if (!isVisible) {
-                tooltip.style.opacity = '1';
-                setTimeout(() => tooltip.style.opacity = '0', 3000);
-            }
-        }
-
-        // Add interactive behavior to table rows
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableRows = document.querySelectorAll('.table tbody tr');
-            tableRows.forEach(row => {
-                row.addEventListener('click', function() {
-                    this.style.backgroundColor = this.style.backgroundColor ? '' : '#e0f2fe';
-                });
-            });
-
-            // Add click interaction to pillar cards
-            const pillarCards = document.querySelectorAll('.pillar-card');
-            pillarCards.forEach(card => {
-                card.style.cursor = 'pointer';
-                card.addEventListener('click', function() {
-                    this.style.transform = this.style.transform ? '' : 'scale(1.05)';
-                    setTimeout(() => this.style.transform = '', 200);
-                });
-            });
-
-            // Add hover effects to priority items
-            const priorityItems = document.querySelectorAll('.priority-item');
-            priorityItems.forEach(item => {
-                item.style.cursor = 'pointer';
-                item.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateX(5px)';
-                });
-                item.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateX(0)';
-                });
-            });
-        });
-    </script>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Comfort PACT Baseline Compliance Analysis</h1>
-            <p>Interactive Dashboard - Pediatric Care Setting</p>
+            <h1>Comfort PACT Benchmarking Compliance Analysis</h1>
+            <p>Out-patient Blood Lab</p>
         </div>
 
         <!-- Executive Summary -->
         <div class="card">
             <h2 class="section-title">Executive Summary</h2>
             <div class="executive-grid">
-                <!-- Left side - Blue and Green boxes side by side -->
-                <div class="exec-left">
-                    <div class="metric-box blue-box" style="flex: 1;">
-                        <div class="metric-number blue-number">14</div>
-                        <div class="metric-label">Compliance Metrics</div>
-                        <div class="metric-sub">Behavioral indicators</div>
-                    </div>
-                    <div class="metric-box green-box" style="flex: 1;">
-                        <div class="metric-number green-number">54</div>
-                        <div class="metric-label">Procedures Observed</div>
-                        <div class="metric-sub">Out patient blood lab procedures</div>
-                    </div>
+                <div class="metric-box blue-box">
+                    <div class="metric-number blue-number">14</div>
+                    <div class="metric-label">Compliance Metrics</div>
+                    <div class="metric-sub">Behavioral indicators</div>
                 </div>
-                
-                <!-- Right side - Purple and Orange boxes -->
-                <div class="exec-right">
-                    <div class="metric-box purple-box">
-                        <div class="metric-number purple-number">5</div>
-                        <div class="metric-label">Comfort PACT Pillars</div>
-                        <div class="metric-sub">Bundled approach</div>
-                    </div>
-                    <div class="metric-box orange-box">
-                        <div class="metric-number orange-number">Total Compliance: Low</div>
-                        <div class="metric-label">42.9% of metrics need improvement</div>
-                    </div>
+                <div class="metric-box green-box">
+                    <div class="metric-number green-number">54</div>
+                    <div class="metric-label">Procedures Observed</div>
+                    <div class="metric-sub">Out patient blood lab procedures</div>
+                </div>
+                <div class="metric-box purple-box">
+                    <div class="metric-number purple-number">5</div>
+                    <div class="metric-label">Comfort PACT Pillars</div>
+                    <div class="metric-sub">Bundled approach</div>
+                </div>
+                <div class="metric-box orange-box">
+                    <div class="metric-number orange-number">Total Compliance: Low</div>
+                    <div class="metric-label">42.9% of metrics need improvement</div>
                 </div>
             </div>
         </div>
@@ -579,56 +510,37 @@
         <!-- Overall Compliance Distribution -->
         <div class="card">
             <h2 class="section-title">Overall Compliance Distribution</h2>
-            <div class="grid grid-2">
+            <div style="display: flex; justify-content: center;">
                 <div class="pie-chart">
-                    <svg width="200" height="200" viewBox="0 0 200 200">
-                        <!-- Pie chart slices -->
-                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#e5e7eb" stroke-width="20"/>
+                    <svg width="300" height="300" viewBox="0 0 300 300">
+                        <!-- Background circle -->
+                        <circle cx="150" cy="150" r="120" fill="transparent" stroke="#e5e7eb" stroke-width="30"/>
+                        
                         <!-- High slice (35.7% = 128.5 degrees) -->
-                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#22c55e" stroke-width="20"
-                                stroke-dasharray="179 322" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                        <circle cx="150" cy="150" r="120" fill="transparent" stroke="#22c55e" stroke-width="30"
+                                stroke-dasharray="268 483" stroke-dashoffset="0" transform="rotate(-90 150 150)"
+                                class="pie-slice" onmouseover="showPieTooltip(event, 'High (≥80%)', '5 behavioral indicators', '35.7%')" 
+                                onmousemove="movePieTooltip(event)" onmouseout="hidePieTooltip()"/>
+                        
                         <!-- Medium slice (21.4% = 77 degrees) -->
-                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#f59e0b" stroke-width="20"
-                                stroke-dasharray="107 394" stroke-dashoffset="-179" transform="rotate(-90 100 100)"/>
+                        <circle cx="150" cy="150" r="120" fill="transparent" stroke="#f59e0b" stroke-width="30"
+                                stroke-dasharray="161 590" stroke-dashoffset="-268" transform="rotate(-90 150 150)"
+                                class="pie-slice" onmouseover="showPieTooltip(event, 'Medium (50-79%)', '3 behavioral indicators', '21.4%')" 
+                                onmousemove="movePieTooltip(event)" onmouseout="hidePieTooltip()"/>
+                        
                         <!-- Low slice (42.9% = 154.4 degrees) -->
-                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#ef4444" stroke-width="20"
-                                stroke-dasharray="215 286" stroke-dashoffset="-286" transform="rotate(-90 100 100)"/>
+                        <circle cx="150" cy="150" r="120" fill="transparent" stroke="#ef4444" stroke-width="30"
+                                stroke-dasharray="323 428" stroke-dashoffset="-429" transform="rotate(-90 150 150)"
+                                class="pie-slice" onmouseover="showPieTooltip(event, 'Low (<50%)', '6 behavioral indicators', '42.9%')" 
+                                onmousemove="movePieTooltip(event)" onmouseout="hidePieTooltip()"/>
+                        
                         <!-- Center text -->
-                        <text x="100" y="95" text-anchor="middle" font-size="24" font-weight="bold" fill="#111827">14</text>
-                        <text x="100" y="115" text-anchor="middle" font-size="12" fill="#6b7280">Metrics</text>
+                        <text x="150" y="142" text-anchor="middle" font-size="36" font-weight="bold" fill="#111827">14</text>
+                        <text x="150" y="170" text-anchor="middle" font-size="16" fill="#6b7280">Total Metrics</text>
                     </svg>
-                </div>
-                <div class="pie-legend">
-                    <div class="legend-item" style="background-color: #22c55e10; border-color: #22c55e;">
-                        <div class="legend-left">
-                            <div class="legend-dot" style="background-color: #22c55e;"></div>
-                            <span>High (≥80%)</span>
-                        </div>
-                        <div class="legend-right">
-                            <div class="legend-value" style="color: #22c55e;">5</div>
-                            <div class="legend-sub">behavioral indicators</div>
-                        </div>
-                    </div>
-                    <div class="legend-item" style="background-color: #f59e0b10; border-color: #f59e0b;">
-                        <div class="legend-left">
-                            <div class="legend-dot" style="background-color: #f59e0b;"></div>
-                            <span>Medium (50-79%)</span>
-                        </div>
-                        <div class="legend-right">
-                            <div class="legend-value" style="color: #f59e0b;">3</div>
-                            <div class="legend-sub">behavioral indicators</div>
-                        </div>
-                    </div>
-                    <div class="legend-item" style="background-color: #ef444410; border-color: #ef4444;">
-                        <div class="legend-left">
-                            <div class="legend-dot" style="background-color: #ef4444;"></div>
-                            <span>Low (<50%)</span>
-                        </div>
-                        <div class="legend-right">
-                            <div class="legend-value" style="color: #ef4444;">6</div>
-                            <div class="legend-sub">behavioral indicators</div>
-                        </div>
-                    </div>
+                    
+                    <!-- Tooltip -->
+                    <div id="pie-tooltip" class="pie-tooltip"></div>
                 </div>
             </div>
         </div>
@@ -844,11 +756,62 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p class="methodology">Methodology Notes</p>
-            <p>Compliance Levels: High (≥80%) | Medium (50-79%) | Low (&lt;50%)</p>
-            <p>Analysis based on 54 out patient blood lab procedures across 14 behavioral indicators</p>
-            <p>The 5 pillars collectively represent the bundled Comfort PACT approach for blood draw pain management</p>
+            <div style="text-align: left;">
+                <p class="methodology">Methodology Notes</p>
+                <p>Compliance Levels: High (≥80%) | Medium (50-79%) | Low (&lt;50%)</p>
+                <p>Analysis based on 54 out patient blood lab procedures across 14 behavioral indicators</p>
+                <p><strong>Additional Contextual Data:</strong></p>
+                <p style="margin-left: 20px;">• Topical analgesic question: 56.52% said "It was not offered or Family was<br>&nbsp;&nbsp;&nbsp;unaware of what it was"</p>
+                <p style="margin-left: 20px;">• Caregiver support question: 29.63% responded "Not required/applicable:<br>&nbsp;&nbsp;&nbsp;Youth patient"</p>
+                <p style="margin-left: 20px;">• Non-verbal cues questions: 47.27% indicated "No visible cues of<br>&nbsp;&nbsp;&nbsp;discomfort"</p>
+                <p style="margin-left: 20px;">• Alternate focus techniques: 30.91% deemed "Not applicable/required"</p>
+                <p><em>Note: 3rd option responses were excluded from compliance calculations and treated as contextual information.</em></p>
+            </div>
         </div>
     </div>
+
+    <script>
+        function showPieTooltip(event, level, count, percentage) {
+            const tooltip = document.getElementById('pie-tooltip');
+            tooltip.innerHTML = `<strong>${level}</strong><br>${count} (${percentage}%)`;
+            tooltip.style.opacity = '1';
+            movePieTooltip(event);
+        }
+
+        function movePieTooltip(event) {
+            const tooltip = document.getElementById('pie-tooltip');
+            const rect = event.currentTarget.closest('svg').getBoundingClientRect();
+            tooltip.style.left = (event.clientX - rect.left + 10) + 'px';
+            tooltip.style.top = (event.clientY - rect.top - 10) + 'px';
+        }
+
+        function hidePieTooltip() {
+            const tooltip = document.getElementById('pie-tooltip');
+            tooltip.style.opacity = '0';
+        }
+
+        // Add interactive behavior when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Table row highlighting
+            const tableRows = document.querySelectorAll('.table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    // Remove highlight from all rows
+                    tableRows.forEach(r => r.style.backgroundColor = '');
+                    // Highlight clicked row
+                    this.style.backgroundColor = '#e0f2fe';
+                });
+            });
+
+            // Pillar card click animations
+            const pillarCards = document.querySelectorAll('.pillar-card');
+            pillarCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.05)';
+                    setTimeout(() => this.style.transform = 'scale(1)', 200);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
