@@ -456,7 +456,7 @@
         @media (max-width: 768px) {
             .executive-grid {
                 grid-template-columns: 1fr;
-                gap: 24px;
+                gap: 16px;
             }
 
             .exec-left {
@@ -475,8 +475,65 @@
             .card {
                 padding: 16px;
             }
+
+            .interactive-bar {
+                height: 250px;
+                padding: 10px;
+            }
+
+            .bar-rect {
+                width: 50px;
+            }
         }
     </style>
+    <script>
+        function showTooltip(element) {
+            // Toggle tooltip visibility on click for mobile
+            const tooltip = element.querySelector('.tooltip');
+            const isVisible = tooltip.style.opacity === '1';
+            
+            // Hide all tooltips first
+            document.querySelectorAll('.tooltip').forEach(t => t.style.opacity = '0');
+            
+            // Show clicked tooltip if it wasn't already visible
+            if (!isVisible) {
+                tooltip.style.opacity = '1';
+                setTimeout(() => tooltip.style.opacity = '0', 3000);
+            }
+        }
+
+        // Add interactive behavior to table rows
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableRows = document.querySelectorAll('.table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    this.style.backgroundColor = this.style.backgroundColor ? '' : '#e0f2fe';
+                });
+            });
+
+            // Add click interaction to pillar cards
+            const pillarCards = document.querySelectorAll('.pillar-card');
+            pillarCards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    this.style.transform = this.style.transform ? '' : 'scale(1.05)';
+                    setTimeout(() => this.style.transform = '', 200);
+                });
+            });
+
+            // Add hover effects to priority items
+            const priorityItems = document.querySelectorAll('.priority-item');
+            priorityItems.forEach(item => {
+                item.style.cursor = 'pointer';
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
