@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comfort PACT Baseline Compliance Analysis Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #6b7280;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #374151;
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-5 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .metric-box {
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+
+        .metric-sub {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .blue-box {
+            background-color: #dbeafe;
+        }
+
+        .blue-number {
+            color: #2563eb;
+        }
+
+        .green-box {
+            background-color: #dcfce7;
+        }
+
+        .green-number {
+            color: #16a34a;
+        }
+
+        .purple-box {
+            background-color: #f3e8ff;
+        }
+
+        .purple-number {
+            color: #9333ea;
+        }
+
+        .orange-box {
+            background-color: #fed7aa;
+        }
+
+        .orange-number {
+            color: #ea580c;
+        }
+
+        .executive-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .exec-left {
+            display: flex;
+            gap: 16px;
+        }
+
+        .exec-right {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .pie-chart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pie-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 12px;
+        }
+
+        .legend-left {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .legend-right {
+            text-align: right;
+        }
+
+        .legend-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .legend-sub {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .priority-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .priority-card {
+            border-radius: 8px;
+            padding: 24px;
+            border-left: 4px solid;
+        }
+
+        .critical-card {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .strength-card {
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+        }
+
+        .priority-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .critical-title {
+            color: #991b1b;
+        }
+
+        .strength-title {
+            color: #14532d;
+        }
+
+        .priority-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .priority-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .critical-name {
+            color: #b91c1c;
+        }
+
+        .strength-name {
+            color: #15803d;
+        }
+
+        .priority-desc {
+            font-size: 0.875rem;
+            margin-bottom: 8px;
+        }
+
+        .critical-desc {
+            color: #dc2626;
+        }
+
+        .strength-desc {
+            color: #16a34a;
+        }
+
+        .priority-sub {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .pillar-card {
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            border: 2px solid;
+        }
+
+        .high-pillar {
+            background-color: #f0fdf4;
+            border-color: #22c55e;
+        }
+
+        .medium-pillar {
+            background-color: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        .low-pillar {
+            background-color: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .pillar-rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .pillar-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pillar-score {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .high-score {
+            color: #16a34a;
+        }
+
+        .medium-score {
+            color: #d97706;
+        }
+
+        .low-score {
+            color: #dc2626;
+        }
+
+        .pillar-level {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            margin-top: 32px;
+        }
+
+        .table th {
+            background-color: #f9fafb;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .compliance-score {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .high-badge {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .medium-badge {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .low-badge {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .bar-chart {
+            margin-top: 24px;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 12px;
+        }
+
+        .bar-label {
+            width: 200px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 24px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .bar-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+        }
+
+        .high-bar {
+            background-color: #22c55e;
+        }
+
+        .medium-bar {
+            background-color: #f59e0b;
+        }
+
+        .low-bar {
+            background-color: #ef4444;
+        }
+
+        .footer {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+        }
+
+        .footer .methodology {
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .executive-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .exec-left {
+                flex-direction: column;
+            }
+
+            .bar-label {
+                width: 150px;
+                font-size: 0.75rem;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Comfort PACT Baseline Compliance Analysis</h1>
+            <p>Interactive Dashboard - Pediatric Care Setting</p>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="card">
+            <h2 class="section-title">Executive Summary</h2>
+            <div class="executive-grid">
+                <!-- Left side - Blue and Green boxes side by side -->
+                <div class="exec-left">
+                    <div class="metric-box blue-box" style="flex: 1;">
+                        <div class="metric-number blue-number">14</div>
+                        <div class="metric-label">Compliance Metrics</div>
+                        <div class="metric-sub">Behavioral indicators</div>
+                    </div>
+                    <div class="metric-box green-box" style="flex: 1;">
+                        <div class="metric-number green-number">54</div>
+                        <div class="metric-label">Procedures Observed</div>
+                        <div class="metric-sub">Out patient blood lab procedures</div>
+                    </div>
+                </div>
+                
+                <!-- Right side - Purple and Orange boxes -->
+                <div class="exec-right">
+                    <div class="metric-box purple-box">
+                        <div class="metric-number purple-number">5</div>
+                        <div class="metric-label">Comfort PACT Pillars</div>
+                        <div class="metric-sub">Bundled approach</div>
+                    </div>
+                    <div class="metric-box orange-box">
+                        <div class="metric-number orange-number">Total Compliance: Low</div>
+                        <div class="metric-label">42.9% of metrics need improvement</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall Compliance Distribution -->
+        <div class="card">
+            <h2 class="section-title">Overall Compliance Distribution</h2>
+            <div class="grid grid-2">
+                <div class="pie-chart">
+                    <svg width="200" height="200" viewBox="0 0 200 200">
+                        <!-- Pie chart slices -->
+                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#e5e7eb" stroke-width="20"/>
+                        <!-- High slice (35.7% = 128.5 degrees) -->
+                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#22c55e" stroke-width="20"
+                                stroke-dasharray="179 322" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                        <!-- Medium slice (21.4% = 77 degrees) -->
+                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#f59e0b" stroke-width="20"
+                                stroke-dasharray="107 394" stroke-dashoffset="-179" transform="rotate(-90 100 100)"/>
+                        <!-- Low slice (42.9% = 154.4 degrees) -->
+                        <circle cx="100" cy="100" r="80" fill="transparent" stroke="#ef4444" stroke-width="20"
+                                stroke-dasharray="215 286" stroke-dashoffset="-286" transform="rotate(-90 100 100)"/>
+                        <!-- Center text -->
+                        <text x="100" y="95" text-anchor="middle" font-size="24" font-weight="bold" fill="#111827">14</text>
+                        <text x="100" y="115" text-anchor="middle" font-size="12" fill="#6b7280">Metrics</text>
+                    </svg>
+                </div>
+                <div class="pie-legend">
+                    <div class="legend-item" style="background-color: #22c55e10; border-color: #22c55e;">
+                        <div class="legend-left">
+                            <div class="legend-dot" style="background-color: #22c55e;"></div>
+                            <span>High (≥80%)</span>
+                        </div>
+                        <div class="legend-right">
+                            <div class="legend-value" style="color: #22c55e;">5</div>
+                            <div class="legend-sub">behavioral indicators</div>
+                        </div>
+                    </div>
+                    <div class="legend-item" style="background-color: #f59e0b10; border-color: #f59e0b;">
+                        <div class="legend-left">
+                            <div class="legend-dot" style="background-color: #f59e0b;"></div>
+                            <span>Medium (50-79%)</span>
+                        </div>
+                        <div class="legend-right">
+                            <div class="legend-value" style="color: #f59e0b;">3</div>
+                            <div class="legend-sub">behavioral indicators</div>
+                        </div>
+                    </div>
+                    <div class="legend-item" style="background-color: #ef444410; border-color: #ef4444;">
+                        <div class="legend-left">
+                            <div class="legend-dot" style="background-color: #ef4444;"></div>
+                            <span>Low (<50%)</span>
+                        </div>
+                        <div class="legend-right">
+                            <div class="legend-value" style="color: #ef4444;">6</div>
+                            <div class="legend-sub">behavioral indicators</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Priority Areas -->
+        <div class="priority-section">
+            <div class="priority-card critical-card">
+                <h3 class="priority-title critical-title">🚨 Critical Priority Areas</h3>
+                <div class="priority-item">
+                    <div class="priority-name critical-name">ALTERNATE FOCUS</div>
+                    <div class="priority-desc critical-desc">15.8% compliance - Critical intervention needed</div>
+                    <div class="priority-sub">1 out of 1 metric shows low compliance</div>
+                </div>
+                <div class="priority-item">
+                    <div class="priority-name critical-name">MEDICATION</div>
+                    <div class="priority-desc critical-desc">36.0% compliance - Focus on topical analgesic processes</div>
+                    <div class="priority-sub">1 out of 2 metrics shows low compliance</div>
+                </div>
+            </div>
+
+            <div class="priority-card strength-card">
+                <h3 class="priority-title strength-title">✅ Strengths to Maintain</h3>
+                <div class="priority-item">
+                    <div class="priority-name strength-name">COMFORT POSITIONS</div>
+                    <div class="priority-desc strength-desc">90.9% compliance - Excellent performance</div>
+                    <div class="priority-sub">1 out of 1 metric shows high compliance</div>
+                </div>
+                <div class="priority-item">
+                    <div class="priority-name strength-name">OneVoice™ Approach</div>
+                    <div class="priority-desc strength-desc">94.55% compliance - Outstanding execution</div>
+                    <div class="priority-sub">Best performing individual metric</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pillar Performance Ranking -->
+        <div class="card">
+            <h2 class="section-title">Pillar Performance Ranking</h2>
+            <div class="grid grid-5">
+                <div class="pillar-card high-pillar">
+                    <div class="pillar-rank">#1</div>
+                    <div class="pillar-name">COMFORT POSITIONS</div>
+                    <div class="pillar-score high-score">90.9%</div>
+                    <div class="pillar-level">High Compliance</div>
+                </div>
+                <div class="pillar-card medium-pillar">
+                    <div class="pillar-rank">#2</div>
+                    <div class="pillar-name">COMMUNICATION</div>
+                    <div class="pillar-score medium-score">72.4%</div>
+                    <div class="pillar-level">Medium Compliance</div>
+                </div>
+                <div class="pillar-card medium-pillar">
+                    <div class="pillar-rank">#3</div>
+                    <div class="pillar-name">PREPARATION</div>
+                    <div class="pillar-score medium-score">51.0%</div>
+                    <div class="pillar-level">Medium Compliance</div>
+                </div>
+                <div class="pillar-card low-pillar">
+                    <div class="pillar-rank">#4</div>
+                    <div class="pillar-name">MEDICATION</div>
+                    <div class="pillar-score low-score">36.0%</div>
+                    <div class="pillar-level">Low Compliance</div>
+                </div>
+                <div class="pillar-card low-pillar">
+                    <div class="pillar-rank">#5</div>
+                    <div class="pillar-name">ALTERNATE FOCUS</div>
+                    <div class="pillar-score low-score">15.8%</div>
+                    <div class="pillar-level">Low Compliance</div>
+                </div>
+            </div>
+
+            <div class="bar-chart">
+                <div class="bar-row">
+                    <div class="bar-label">COMFORT POSITIONS</div>
+                    <div class="bar-container">
+                        <div class="bar-fill high-bar" style="width: 90.9%;"></div>
+                        <div class="bar-text">90.9%</div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">COMMUNICATION</div>
+                    <div class="bar-container">
+                        <div class="bar-fill medium-bar" style="width: 72.4%;"></div>
+                        <div class="bar-text">72.4%</div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">PREPARATION</div>
+                    <div class="bar-container">
+                        <div class="bar-fill medium-bar" style="width: 51.0%;"></div>
+                        <div class="bar-text">51.0%</div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">MEDICATION</div>
+                    <div class="bar-container">
+                        <div class="bar-fill low-bar" style="width: 36.0%;"></div>
+                        <div class="bar-text">36.0%</div>
+                    </div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label">ALTERNATE FOCUS</div>
+                    <div class="bar-container">
+                        <div class="bar-fill low-bar" style="width: 15.8%;"></div>
+                        <div class="bar-text">15.8%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In-Depth Compliance Metrics -->
+        <div class="card">
+            <h2 class="section-title">In-Depth Compliance Metrics</h2>
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Pillar</th>
+                            <th>Behavioral Indicator</th>
+                            <th style="text-align: right;">Exact Compliance %</th>
+                            <th style="text-align: center;">Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 500;">MEDICATION</td>
+                            <td>Did you apply a topical analgesic prior to your visit to the Lab?</td>
+                            <td style="text-align: right;" class="compliance-score">16.36%</td>
+                            <td style="text-align: center;"><span class="badge low-badge">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">MEDICATION</td>
+                            <td>If yes, was a topical analgesic offered to you?</td>
+                            <td style="text-align: right;" class="compliance-score">55.56%</td>
+                            <td style="text-align: center;"><span class="badge medium-badge">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">PREPARATION</td>
+                            <td>After collecting the requisition, did the registration clerk ask the family or patient if they had any questions pertaining to the procedure?</td>
+                            <td style="text-align: right;" class="compliance-score">3.64%</td>
+                            <td style="text-align: center;"><span class="badge low-badge">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">PREPARATION</td>
+                            <td>If met with questions or concerns, was the phlebotomist able to sufficiently alleviate stress and concern using familiar words before blood was drawn?</td>
+                            <td style="text-align: right;" class="compliance-score">100.00%</td>
+                            <td style="text-align: center;"><span class="badge high-badge">High</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">PREPARATION</td>
+                            <td>Once the family is directed to the room where their blood sample will be collected, did the phlebotomist engage in small talk to comfort the family or patient?</td>
+                            <td style="text-align: right;" class="compliance-score">31.48%</td>
+                            <td style="text-align: center;"><span class="badge low-badge">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">PREPARATION</td>
+                            <td>Did the phlebotomist ensure to engage in communication regarding preparation using language understood by both, the family, and the child?</td>
+                            <td style="text-align: right;" class="compliance-score">63.64%</td>
+                            <td style="text-align: center;"><span class="badge medium-badge">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">PREPARATION</td>
+                            <td>Did the phlebotomist introduce themselves appropriately to both, the family and the child and engage in rapport building by checking in on how they were doing and/or how the child is feeling today?</td>
+                            <td style="text-align: right;" class="compliance-score">20.37%</td>
+                            <td style="text-align: center;"><span class="badge low-badge">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">PREPARATION</td>
+                            <td>Did the phlebotomist engage with the caregiver to explore how they would participate in supporting the child?</td>
+                            <td style="text-align: right;" class="compliance-score">86.84%</td>
+                            <td style="text-align: center;"><span class="badge high-badge">High</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">COMMUNICATION</td>
+                            <td>Did the phlebotomist use possibility language and developmentally appropriate words to communicate with the child?</td>
+                            <td style="text-align: right;" class="compliance-score">70.91%</td>
+                            <td style="text-align: center;"><span class="badge medium-badge">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">COMMUNICATION</td>
+                            <td>Was the phlebotomist able to gauge non-verbal cues of discomfort in the child or family's behavior?</td>
+                            <td style="text-align: right;" class="compliance-score">89.66%</td>
+                            <td style="text-align: center;"><span class="badge high-badge">High</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">COMMUNICATION</td>
+                            <td>Did the phlebotomist effectively address the discomfort expressed through non-verbal cues by the child effectively?</td>
+                            <td style="text-align: right;" class="compliance-score">34.48%</td>
+                            <td style="text-align: center;"><span class="badge low-badge">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">COMMUNICATION</td>
+                            <td>Did the phlebotomist sufficiently apply the OneVoice™ approach?</td>
+                            <td style="text-align: right;" class="compliance-score">94.55%</td>
+                            <td style="text-align: center;"><span class="badge high-badge">High</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">COMFORT POSITIONS</td>
+                            <td>Did the child life specialist or phlebotomist suggest the age-appropriate comfort position for each patient?</td>
+                            <td style="text-align: right;" class="compliance-score">90.91%</td>
+                            <td style="text-align: center;"><span class="badge high-badge">High</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">ALTERNATE FOCUS</td>
+                            <td>Was there a process of exploring alternate focus techniques/options for both, the family, and the child before and during the period of drawing blood?</td>
+                            <td style="text-align: right;" class="compliance-score">15.79%</td>
+                            <td style="text-align: center;"><span class="badge low-badge">Low</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="methodology">Methodology Notes</p>
+            <p>Compliance Levels: High (≥80%) | Medium (50-79%) | Low (&lt;50%)</p>
+            <p>Analysis based on 54 out patient blood lab procedures across 14 behavioral indicators</p>
+            <p>The 5 pillars collectively represent the bundled Comfort PACT approach for blood draw pain management</p>
+        </div>
+    </div>
+</body>
+</html>
